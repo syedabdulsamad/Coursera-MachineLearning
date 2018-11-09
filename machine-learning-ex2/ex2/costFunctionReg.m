@@ -19,9 +19,40 @@ grad = zeros(size(theta));
 
 
 
+hyp =  X*theta; % basic hypothesis
+sigmoidHyp = sigmoid(hyp); % sigmoid hypothesis
+tempCost = 0;
+for i = 1:m
+    first = -1 * (y(i,1) * log(sigmoidHyp(i,1)));           % cost when y = 0 
+    second = (1 - y(i,1)) * log(1- sigmoidHyp(i,1));        % cost when y = 1
+    tempCost = tempCost + (first - second);  % cost computation
+end
+tempCost = tempCost/m;
 
+regularizedTerm = 0;
+for t = 2:length(theta)
+   regularizedTerm = regularizedTerm + theta(t)^2;
+end
 
+tempCost2 = (lambda/(2*m)) * regularizedTerm;
+J = tempCost + tempCost2; % final cost
 
-% =============================================================
+%-------------------------------Gradiant Calculation----------------------------------%
+
+% Gradiant calculation for theta 0
+firstSum = 0;
+for j = 1:m % this should be # of training examples
+    firstSum = firstSum + (sigmoidHyp(j) - y(j)) * X(j,1);      
+end 
+grad(1) = firstSum/m;
+
+% Gradiant calculation for remaining theta
+for i = 2:length(theta)  % this should be # of features
+    sum = 0;
+    for j = 1:m % this should be # of training examples
+       sum = sum + (sigmoidHyp(j) - y(j)) * X(j,i);  
+    end
+    grad(i) = (sum/m + (lambda/m * theta(i)));  % setting gradiant simontaneously
+end
 
 end
